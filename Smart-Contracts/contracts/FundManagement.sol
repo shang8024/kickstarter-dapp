@@ -14,7 +14,7 @@ contract FundManagement {
 
     // A Spending of Fund Management System
     struct Spending {
-        string purpose; // purpose of spending
+        string purpose; // purpose of spending, should be non-empty
         uint256 amt; // ETH amount to spend
         address receiver; // receiver of the spending
         bool executed; // whether the spending has been executed
@@ -27,7 +27,7 @@ contract FundManagement {
     address public admin;
 
     // Min amount ETH to deposit to become a stakeholder
-    uint256 public minBuy;
+    uint256 public minBuyETH;
 
     // (holder => ETH amount deposited)
     mapping(address => uint256) public stakeholders;
@@ -36,21 +36,20 @@ contract FundManagement {
     mapping(uint256 => Spending) public spending;
 
     // percent of votes needed from total tokens to pass a spending request, number should be rounded down.
-    uint256 public spendingMinVotePercent; // 75% = 75
+    uint256 MIN_VOTE_PERCENT = 75;
 
     // address of the Share Token
     address public shareToken;
 
     // other valiables ----------------------------------------------
-    // total minted tokens in Gwei
-    uint256 public tokenMinted; //Gwei
+    // total minted tokens in wei
+    uint256 public tokenMinted; // unit in wei represent FMD token
 
     // helper variable to keep track of amount of spendingId
     uint256 public spendingIdCounter;
 
-    uint256 MIN_VOTE_PERCENT = 75;
+  
 
-    uint256 ONE_ETH = 1_000_000_000; //Gwei
     // ------------------------------------------------------------------
 
     // Stakeholder has deposited tokens (to contract address)
@@ -71,11 +70,11 @@ contract FundManagement {
     /**
      * @dev Sets the admin that manages the Fund Management System and the min amount of ETH to become a stakeholder
      * @param _admin the admin who manages the Fund Management System
-     * @param _minBuy the min amount of ETH to become a stakeholder
+     * @param _minBuyETH the min amount of ETH to become a stakeholder
      */
-    constructor(address _admin, uint256 _minBuy) {
+    constructor(address _admin, uint256 _minBuyETH) {
         admin = _admin;
-        minBuy = _minBuy;
+        minBuyETH = _minBuyETH;
         shareToken = address(new FMDToken(address(this)));
     }
 
@@ -84,33 +83,47 @@ contract FundManagement {
      * @param depositAmt the amount of ETH deposited
      */
     function deposit(uint256 depositAmt) public payable{
-        // check if the deposit amount is greater than the minBuy
-        require(depositAmt >= minBuy, "Deposit amount is less than minBuy");
+        // check if the deposit amount is greater than the minBuyETH
+        require(depositAmt >= minBuyETH, "Deposit amount is less than minBuyETH");
         require(msg.value == depositAmt, "ETH sent and depositAmt not machting");
         // require(msg.value >= depositAmt, "Not enough ETH sent"); why we dont just use msg.value
 
-        // calculate leftover ETH to sender
-        uint256 ethChangeAmt = depositAmt%(ONE_ETH/10);
-        uint256 ethChargeAmt = depositAmt-ethChangeAmt;
-        uint256 tokenAmt = ethChargeAmt; //Gwei
-        // console.log("ethChangeAmt: %o", ethChangeAmt);
-        // console.log("ethChargeAmt: %o", ethChargeAmt);
-        // console.log("tokenAmt: %o", tokenAmt);
-        // console.log("depositAmt: %o", depositAmt);
-
-        // return changeAmt ETH to sender
-        // Note: 2nd variable undeclared as the 2nd return value is not used
-        (bool sent,) = msg.sender.call{value: ethChangeAmt}("");
-        require(sent, "Failed to send Ether");
+        uint256 FMDAmt = depositAmt * 10; // 10 FMD = 1 ETH
 
         // mint 1 x ethChargeAmt FMD tokens to sender (1 FMD token = 0.1 ETH)     
-        FMDToken(shareToken).mint(msg.sender, tokenAmt);
-        tokenMinted += tokenAmt;
+        FMDToken(shareToken).mint(msg.sender, FMDAmt);
+        tokenMinted += FMDAmt;
 
         // add depositAmt to the sender's balance
-        stakeholders[msg.sender] += ethChargeAmt;
+        stakeholders[msg.sender] += depositAmt; // unit: Gwei (1 ETH)
 
         emit Deposit(msg.sender, depositAmt);
+    }
+
+    /**
+     * @dev Transfer FMD back to contract address (and not withdraw ETH)
+     * @param transferAmt the amount of FMD to Transfer
+     */
+    function transfer(uint256 transferAmt) public {
+        // check if the withdraw amount is greater than the minBuyETH
+        require(transferAmt >= minBuyETH * 10, "transfer amount must be greater than 1 FMD = 0.1 ETH");
+
+        uint256 ETHAmt = transferAmt / 10; // 10 FMD = 1 ETH
+
+        // check if the transferAmt amount is less than the sender's balance
+        // transferAmt is FMD, divide by 10 to get ETH amount
+
+        require(ETHAmt <= stakeholders[msg.sender], "transfer amount is greater than sender's balance");
+
+        // transfer FMD tokens from sender to contract address
+        FMDToken(shareToken).transfer(msg.sender, address(this), transferAmt);
+        // tokenMinted -= transferAmt * 10; David said we dont need to decrease tokenMinted
+
+        // console.log("STAAmt: %s", stakeholders[msg.sender]);
+        // console.log("ETHAmt: %s", ETHAmt);
+        // subtract transferAmt from the sender's balance
+        stakeholders[msg.sender] -= ETHAmt; // unit: Gwei (1 ETH)
+        // console.log("STAAmt: %s", stakeholders[msg.sender]);
     }
 
     /**
@@ -127,9 +140,11 @@ contract FundManagement {
         // executeSpending would reduce the contract balance, which still makes some spending
         // unable to perform for the moment, so it's not helpful to check it in this function.
 
-        // About min spendingAmt: it's ok to spend less than the minBuy, because spending
+        // About min spendingAmt: it's ok to spend less than the minBuyETH, because spending
         // is not about buying tokens, it's about spending ETH
         require(spendingAmt > 0, "Spending amount should be greater than 0");
+
+        require(bytes(_purpose).length > 0, "Purpose should not be empty");
 
         spending[spendingIdCounter] = Spending({
             purpose: _purpose, // no way to get purpose from frontend?
@@ -197,7 +212,10 @@ contract FundManagement {
         // check if the spending has enough approvals
         uint256 votePercent;
         if (tokenMinted>0){
-            votePercent = 100*spending[spendingId].approvalCount/tokenMinted; // vote percentage = should be 0 ~ 100
+            // approvalCount is in unit of Wei repersent the amount of ETH
+            // tokenMinted is in unit of Wei repersent the amount of FMD tokens
+            votePercent = 1000*spending[spendingId].approvalCount/tokenMinted; // vote percentage = should be 0 ~ 100
+            // Note: 1000 = 100(percent) * 10 (1 FMD = 0.1 ETH), for less calculation/gas
         }
 
         require(votePercent >= MIN_VOTE_PERCENT, "Not enough approvals");
