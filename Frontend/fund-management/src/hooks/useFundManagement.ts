@@ -14,7 +14,7 @@ type Spending = {
     amt: string;
     receiver: string;
     executed: boolean;
-    approvalETHCount: number;
+    approvalETHCount: string;
 }
 type Project = {
     shareTokenAddress: string;
@@ -59,7 +59,6 @@ const useFundManagement = () => {
             const account = accounts[0];
             console.log("Connected to account: ", account);
             setCurrentAccount(account);
-            projectProfile();
         } catch (err) {
             console.log("connect: ", err);
         }
@@ -70,16 +69,18 @@ const useFundManagement = () => {
         if (!ethereum) {
             throw new Error("Please install Metamask");
         }
-        checkAccountWhenReload();
+        checkProjectAccountWhenReload();
     }, [])
-    const checkAccountWhenReload = async () => {
+
+    const checkProjectAccountWhenReload = async () => {
         try {
+            projectProfile();
             const accounts = await ethereum.request({ method: 'eth_accounts' });
             if (accounts.length != 0) {
                 connect();
             }
         } catch (err) {
-            console.log("checkAccountWhenReload: ", err);
+            console.log("checkProjectAccountWhenReload: ", err);
         }
     };
 
@@ -92,18 +93,15 @@ const useFundManagement = () => {
     const projectProfile = async () => {
         const contract = getFundManagementContract();
         const shareTokenAddress: string = await contract.shareToken();
-        const shareTokenContract = getFMDTokenContract(shareTokenAddress);
-
         const admin: string = await contract.admin();
         const minBuyETH = ethers.utils.formatEther(await contract.minBuyETH());
-        const fmdMinted = ethers.utils.formatEther(await contract.fmdMinted());
+        const fmdMinted = ethers.utils.formatEther(await contract.tokenMinted());
         const spendingIdCounter: number = (await contract.spendingIdCounter()).toNumber();
-
         let spending: Spending[] = [];
         for (let i = 0; i < spendingIdCounter; i++) {
-            let { purpose, amt, receiver, executed, approvalETHCount } = await contract.spending(i);
+            let { purpose, amt, receiver, executed, approvalCount } = await contract.spending(i);
             amt = ethers.utils.formatEther(amt);
-            approvalETHCount = ethers.utils.formatEther(approvalETHCount);
+            let approvalETHCount = ethers.utils.formatEther(approvalCount);
             spending.push({ purpose, amt, receiver, executed, approvalETHCount });
         }
         console.log("Project data---------------------------------")

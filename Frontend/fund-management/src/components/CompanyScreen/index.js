@@ -4,7 +4,7 @@ import Card from '../Card';
 import Dialog from '../Dialog';
 
 const CompanyScreen = (props) => {
-    const { connect, currentAccount, projectData, accountData } = useFundManagement();
+    const { connect, currentAccount, projectData, accountData} = useFundManagement();
 
     // console.log("CompanyScreen: account = ", currentAccount);
     const [open, setOpen] = React.useState(false);
@@ -102,6 +102,11 @@ const CompanyScreen = (props) => {
                             onClick={connect}>
                             <span>{currentAccount ? 'Connected' : 'Connect to MetaMask'}</span>
                         </button>
+                        {/* <button
+                            className='button'
+                            onClick={createSpending()}>
+                            <span>{"create spending"}</span>
+                        </button> */}
                         <div id='subscription-info'>
                             {!currentAccount ? null : <p>Address: { currentAccount }</p>}
                         </div>
@@ -119,33 +124,6 @@ const CompanyScreen = (props) => {
                 <button className='slide-next button' onClick={()=>slide((a,b)=>a+b)}>&#8250;</button>
             </div>
             }
-            {/* <Dialog open={open} closeDialog={() => closeDialog()}>
-                <section>
-                    <div className='button-input-group'>
-                        <div className='group input-group'>
-                            <input
-                                type="text"
-                                placeholder="Key"
-                                className='inputfield'
-                                onChange={(e) => {setKey(e.target.value)}}
-                            />
-                        </div>
-                        <div className='group input-group'>
-                            <input
-                                type="number"
-                                placeholder="Amount"
-                                className='inputfield'
-                                onChange={(e) => {setAmount(e.target.value)}}
-                            />
-                        </div>
-                        <div className='group button-group'>
-                            {loading ? <div className="loader"/>
-                            : <button onClick={subscribe}>Subscribe</button>}
-                            {(!loading) && message ? <p>{message}</p> : null}
-                        </div>
-                    </div>
-                </section>
-            </Dialog> */}
         </div>
     );
 };
