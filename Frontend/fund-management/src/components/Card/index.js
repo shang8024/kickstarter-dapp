@@ -6,7 +6,6 @@ const Card = (props) => {
     const [loading,setLoading] = React.useState(false);
 
     const respondProposal = (approve) => {
-        console.log(status);
         setLoading(true);
         // do api call
         setTimeout(()=>{
@@ -35,7 +34,7 @@ const Card = (props) => {
                         <button className="button" id='reject' onClick={()=>respondProposal('rejected')}>Reject</button>
                         <button className="button" id='approve' onClick={()=>respondProposal('approved')}>Approve</button>
                     </>
-                : <div className='button-info'><h3>{ (!spending.executed) ? "You have "+ {status} + " this proposal." : "Executed"}</h3></div>)
+                : <div className='button-info'><h3>{ (!spending.executed) ? "You have "+ status + " this proposal." : "Executed"}</h3></div>)
             }
             </div>
         </div>
