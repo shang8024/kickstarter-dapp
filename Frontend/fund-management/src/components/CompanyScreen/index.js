@@ -4,7 +4,7 @@ import Card from '../Card';
 import Dialog from '../Dialog';
 
 const CompanyScreen = (props) => {
-    const { connect, currentAccount, fundManagementData } = useFundManagement();
+    const { connect, currentAccount, projectData, accountData } = useFundManagement();
 
     // console.log("CompanyScreen: account = ", currentAccount);
     const [open, setOpen] = React.useState(false);
@@ -113,7 +113,7 @@ const CompanyScreen = (props) => {
                 <button className='slide-prev button' onClick={()=>slide((a,b)=>a-b)}>&#8249;</button>
                 <div className="slide-container rootClass" >
                     <div className="slide-content">
-                        {fundManagementData && fundManagementData.approvals.map((s,index) => <Card key={index.toString()} index={index} data={fundManagementData.spending[s]}/>)}
+                        {projectData && accountData.approvals.map((s,index) => <Card key={index.toString()} index={index} data={projectData.spending[s]}/>)}
                     </div>
                 </div>
                 <button className='slide-next button' onClick={()=>slide((a,b)=>a+b)}>&#8250;</button>

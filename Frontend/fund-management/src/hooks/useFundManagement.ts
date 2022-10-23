@@ -16,16 +16,19 @@ type Spending = {
     executed: boolean;
     approvalCount: number;
 }
-type FundManagement = {
+type Project = {
     shareTokenAddress: string;
     admin: string;
-    shareTokenBalance: string;
     minBuyETH: string;
     tokenMinted: string;
     spendingIdCounter: number;
     spending: Spending[];
+}
+
+type Account = {
+    fmdBalance: string;
+    ethBalance: string;
     approvals: number[];
-    stakeholders: string;
 }
 
 const getFundManagementContract = () => {
@@ -40,14 +43,13 @@ const getFMDTokenContract = (fmdTokenContractAddress) => {
 }
 
 const useFundManagement = () => {
-    // const fundManagementContract = getFundManagementContract();
     const [currentAccount, setCurrentAccount] = useState<string>('');
-    // const[currentShareToken, setCurrentShareToken] = useState<string>('');
-    const [fundManagementData, setFundManagementData] = useState<FundManagement | null>(null);
+    const [projectData, setProjectData] = useState<Project | null>(null);
+    const [accountData, setAccountData] = useState<Account | null>(null);
 
     const connect = async () => {
-       try{
-            if(!ethereum) {
+        try {
+            if (!ethereum) {
                 throw new Error('Please install Metamask');
             }
             const accounts = await ethereum.request({ method: 'eth_requestAccounts' }); //eth_requestAccounts
@@ -57,8 +59,9 @@ const useFundManagement = () => {
             const account = accounts[0];
             console.log("Connected to account: ", account);
             setCurrentAccount(account);
-        }catch(err){
-            console.log("connect: ",err);
+            projectProfile();
+        } catch (err) {
+            console.log("connect: ", err);
         }
     };
 
@@ -70,59 +73,73 @@ const useFundManagement = () => {
         checkAccountWhenReload();
     }, [])
     const checkAccountWhenReload = async () => {
-        try{
+        try {
             const accounts = await ethereum.request({ method: 'eth_accounts' });
             if (accounts.length != 0) {
                 connect();
             }
-        }catch(err){
+        } catch (err) {
             console.log("checkAccountWhenReload: ", err);
         }
     };
 
     useEffect(() => {
-        if(currentAccount){
-            getFundManagement();
+        if (currentAccount) {
+            accountProfile();
         }
     }, [currentAccount]);
 
-    const getFundManagement = async () => {
+    const projectProfile = async () => {
         const contract = getFundManagementContract();
-        const shareTokenAddress : string = await contract.shareToken();
+        const shareTokenAddress: string = await contract.shareToken();
         const shareTokenContract = getFMDTokenContract(shareTokenAddress);
 
-        const admin : string = await contract.admin();
-        const shareTokenBalance = ethers.utils.formatEther(await shareTokenContract.balanceOf(currentAccount));
+        const admin: string = await contract.admin();
         const minBuyETH = ethers.utils.formatEther(await contract.minBuyETH());
         const tokenMinted = ethers.utils.formatEther(await contract.tokenMinted());
-        const stakeholders = ethers.utils.formatEther(await contract.stakeholders(currentAccount));
-        const spendingIdCounter : number = (await contract.spendingIdCounter()).toNumber();
+        const spendingIdCounter: number = (await contract.spendingIdCounter()).toNumber();
 
-        let spending : Spending[]= [];
-        let approvals : number[] = [];
+        let spending: Spending[] = [];
         for (let i = 0; i < spendingIdCounter; i++) {
-            let {purpose, amt, receiver, executed, approvalCount} = await contract.spending(i);
-            let approvalData = (await contract.approvals(i, currentAccount)).toString();
-            console.log("approvalData: ", approvalData);
+            let { purpose, amt, receiver, executed, approvalCount } = await contract.spending(i);
             amt = ethers.utils.formatEther(amt);
             approvalCount = ethers.utils.formatEther(approvalCount);
-            spending.push({purpose, amt, receiver, executed, approvalCount});
-            approvals.push(approvalData);
+            spending.push({ purpose, amt, receiver, executed, approvalCount });
         }
+        console.log("Project data---------------------------------")
         console.log("shareTokenAddress: ", shareTokenAddress)
         console.log("admin: ", admin)
-        console.log("shareTokenBalance: ", shareTokenBalance)
         console.log("minBuyETH: ", minBuyETH)
         console.log("tokenMinted: ", tokenMinted)
         console.log("spendingIdCounter: ", spendingIdCounter)
         console.log("spending: ", spending)
-        console.log("approvals: ", approvals)
-        console.log("stakeholders: ", stakeholders)
-        
-        setFundManagementData({ shareTokenAddress, admin, shareTokenBalance, minBuyETH, tokenMinted, spendingIdCounter, spending, approvals, stakeholders });
-        // return { shareTokenAddress, admin, shareTokenBalance, minBuyETH, tokenMinted, spendingIdCounter, spending, approvals, stakeholders };
+
+        setProjectData({ shareTokenAddress, admin, minBuyETH, tokenMinted, spendingIdCounter, spending });
     }
-    return { connect, currentAccount, fundManagementData };
+
+    const accountProfile = async () => {
+        const contract = getFundManagementContract();
+        const shareTokenAddress: string = await contract.shareToken();
+        const shareTokenContract = getFMDTokenContract(shareTokenAddress);
+
+        const fmdBalance = ethers.utils.formatEther(await shareTokenContract.balanceOf(currentAccount));
+        const ethBalance = ethers.utils.formatEther(await contract.stakeholders(currentAccount));
+        const spendingIdCounter: number = (await contract.spendingIdCounter()).toNumber();
+
+        let approvals: number[] = [];
+        for (let i = 0; i < spendingIdCounter; i++) {
+            let approvalData = (await contract.approvals(i, currentAccount)).toString();
+            approvals.push(approvalData);
+        }
+        console.log("Account data---------------------------------")
+        console.log("fmdBalance: ", fmdBalance)
+        console.log("ethBalance: ", ethBalance)
+        console.log("approvals: ", approvals)
+
+        setAccountData({ fmdBalance, ethBalance, approvals });
+    }
+
+    return { connect, currentAccount, projectData, accountData };
 }
 
 
