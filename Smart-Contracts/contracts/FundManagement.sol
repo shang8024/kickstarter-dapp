@@ -19,8 +19,9 @@ contract FundManagement {
         address receiver; // receiver of the spending
         bool executed; // whether the spending has been executed
         // mapping(address => bool) approvals; // true:+1, false:-1 (stakeholders => vote)
-        uint256 approvalCount; // number of tokens controlled by the addresses that approved
+        uint256 approvalCount; // number of ETH tokens controlled by the addresses that approved
     }
+    // (spendingIdCounter => (stakeholders => vote))
     mapping(uint256 => mapping(address => int)) public approvals; // 0 unvoted, 1 approve, -1 disapprove
 
     // The owner of the contract

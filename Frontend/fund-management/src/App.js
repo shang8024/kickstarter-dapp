@@ -7,7 +7,7 @@ const CopyRight = () => {
   return(
     <div id="copyRight">
       <ul className='menu'>
-        <li>CSCD71</li>
+        <li>Powered by Ethereum</li>
         <li>{"Design: "} 
           <a href='https://github.com/soso-song'>Soso Song</a>{", "}
           <a href='https://github.com/shang8024'>Sandy Shang</a>

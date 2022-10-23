@@ -1,9 +1,12 @@
 import React from 'react';
+import useFundManagement from '../../hooks/useFundManagement.ts';
 import Card from '../Card';
 import Dialog from '../Dialog';
 
 const CompanyScreen = (props) => {
-    const [subscribed, setSubscribed] = React.useState(false);
+    const { connect, currentAccount, useFundManagementData } = useFundManagement();
+
+    // console.log("CompanyScreen: account = ", currentAccount);
     const [open, setOpen] = React.useState(false);
     const [key, setKey] = React.useState('');
     const [amount, setAmount] = React.useState(0);
@@ -74,7 +77,6 @@ const CompanyScreen = (props) => {
         //sleep for 10 sec
         setTimeout(()=>{
             setLoading(false);
-            setSubscribed(true);
             setMessage('Successed!');
         },3000);
     }
@@ -95,18 +97,18 @@ const CompanyScreen = (props) => {
                         <p className="company-description">{data.description}</p>
                     </article>
                     <div id='subscription-wrapper'>
-                        <div id='subscription-info'>
-                            {!subscribed ? null : <h3>You have subscribed {} to this company.</h3>}
-                        </div>
                         <button 
                             className='button' 
-                            onClick={() => setOpen(true)}>
-                            <span>{subscribed ? 'Subscribe More' : 'Become a Shareholder'}</span>
+                            onClick={connect}>
+                            <span>{currentAccount ? 'Connected' : 'Connect to MetaMask'}</span>
                         </button>
+                        <div id='subscription-info'>
+                            {!currentAccount ? null : <p>Address: { currentAccount }</p>}
+                        </div>
                     </div>
                 </div>
             </div>
-            { subscribed &&
+            { currentAccount &&
             <div className='slider'>
                 <button className='slide-prev button' onClick={()=>slide((a,b)=>a-b)}>&#8249;</button>
                 <div className="slide-container rootClass" >
@@ -117,7 +119,7 @@ const CompanyScreen = (props) => {
                 <button className='slide-next button' onClick={()=>slide((a,b)=>a+b)}>&#8250;</button>
             </div>
             }
-            <Dialog open={open} closeDialog={() => closeDialog()}>
+            {/* <Dialog open={open} closeDialog={() => closeDialog()}>
                 <section>
                     <div className='button-input-group'>
                         <div className='group input-group'>
@@ -143,7 +145,7 @@ const CompanyScreen = (props) => {
                         </div>
                     </div>
                 </section>
-            </Dialog>
+            </Dialog> */}
         </div>
     );
 };
