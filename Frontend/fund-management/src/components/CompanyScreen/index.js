@@ -1,7 +1,6 @@
 import React from 'react';
 import useFundManagement from '../../hooks/useFundManagement.ts';
 import Card from '../Card';
-import Dialog from '../Dialog';
 
 const CompanyScreen = (props) => {
     const { 
@@ -150,7 +149,7 @@ const CompanyScreen = (props) => {
                 <button className='slide-prev button' onClick={()=>slide((a,b)=>a-b)}>&#8249;</button>
                 <div className="slide-container rootClass" >
                     <div className="slide-content">
-                        {projectData && accountData.approvals.map((s,index) => <Card key={index.toString()} index={index} data={projectData.spending[s]}/>)}
+                        {projectData && accountData.approvals.map((s,index) => <Card key={index.toString()} index={index} spending={projectData.spending[s]} fmdMinted={projectData.fmdMinted}/>)}
                     </div>
                 </div>
                 <button className='slide-next button' onClick={()=>slide((a,b)=>a+b)}>&#8250;</button>

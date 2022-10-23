@@ -501,6 +501,22 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   width: 100%;
   margin-bottom: 10px;
 }
+
+.title div {
+  width: 40px;
+  position: relative;
+}
+
+.title div a {
+  position: absolute;
+  width: 100%;
+  word-wrap: break-word;
+  height: 100%;
+  line-height: 20px;
+  text-align: center;
+  bottom: 0;
+}
+
 .number {
   color: #ff4486;
   width: 100px;
@@ -513,6 +529,10 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   color: #696969;
   text-decoration: none;
   font-size: small;
+}
+
+.progress {
+  text-align: center;
 }
 
 .card-button-group{
