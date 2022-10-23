@@ -14,13 +14,13 @@ type Spending = {
     amt: string;
     receiver: string;
     executed: boolean;
-    approvalCount: number;
+    approvalETHCount: number;
 }
 type Project = {
     shareTokenAddress: string;
     admin: string;
     minBuyETH: string;
-    tokenMinted: string;
+    fmdMinted: string;
     spendingIdCounter: number;
     spending: Spending[];
 }
@@ -96,25 +96,25 @@ const useFundManagement = () => {
 
         const admin: string = await contract.admin();
         const minBuyETH = ethers.utils.formatEther(await contract.minBuyETH());
-        const tokenMinted = ethers.utils.formatEther(await contract.tokenMinted());
+        const fmdMinted = ethers.utils.formatEther(await contract.fmdMinted());
         const spendingIdCounter: number = (await contract.spendingIdCounter()).toNumber();
 
         let spending: Spending[] = [];
         for (let i = 0; i < spendingIdCounter; i++) {
-            let { purpose, amt, receiver, executed, approvalCount } = await contract.spending(i);
+            let { purpose, amt, receiver, executed, approvalETHCount } = await contract.spending(i);
             amt = ethers.utils.formatEther(amt);
-            approvalCount = ethers.utils.formatEther(approvalCount);
-            spending.push({ purpose, amt, receiver, executed, approvalCount });
+            approvalETHCount = ethers.utils.formatEther(approvalETHCount);
+            spending.push({ purpose, amt, receiver, executed, approvalETHCount });
         }
         console.log("Project data---------------------------------")
         console.log("shareTokenAddress: ", shareTokenAddress)
         console.log("admin: ", admin)
         console.log("minBuyETH: ", minBuyETH)
-        console.log("tokenMinted: ", tokenMinted)
+        console.log("fmdMinted: ", fmdMinted)
         console.log("spendingIdCounter: ", spendingIdCounter)
         console.log("spending: ", spending)
 
-        setProjectData({ shareTokenAddress, admin, minBuyETH, tokenMinted, spendingIdCounter, spending });
+        setProjectData({ shareTokenAddress, admin, minBuyETH, fmdMinted, spendingIdCounter, spending });
     }
 
     const accountProfile = async () => {
@@ -137,6 +137,20 @@ const useFundManagement = () => {
         console.log("approvals: ", approvals)
 
         setAccountData({ fmdBalance, ethBalance, approvals });
+    }
+
+    // amount in ETH, min = "0.1"
+    const buyFMDToken = async (amount: string) => {
+        try {
+            const contract = getFundManagementContract();
+            const tx = await contract.deposit({ value: ethers.utils.parseEther(amount) });
+            await tx.wait();
+            console.log("buyFMDToken: ", tx);
+            accountProfile();
+            projectProfile();
+        } catch (err) {
+            console.log("buyFMDToken: ", err);
+        }
     }
 
     return { connect, currentAccount, projectData, accountData };

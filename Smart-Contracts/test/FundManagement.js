@@ -77,7 +77,7 @@ describe("FundManagement", function () {
                 fundManagement, "Deposit"
             ).withArgs(account1.address, ONE_FMD.mul(3));
         });
-        it("Should receive and store the funds from shareholders to contract balance", async function () {
+        it("Should receive and store the funds from stakeholders to contract balance", async function () {
             const { fundManagement, account1, account2} = await loadFixture(deployFundManagementFixture);
             fundManagement.connect(account1).deposit(ONE_FMD.mul(3), { value: ONE_FMD.mul(3) }) // account1
             fundManagement.connect(account2).deposit(ONE_FMD.mul(7), { value: ONE_FMD.mul(7) }) // account2
@@ -85,7 +85,7 @@ describe("FundManagement", function () {
             // check balance of contract
             expect(await ethers.provider.getBalance(fundManagement.address)).to.equal(ONE_FMD.mul(10));
         });
-        it("Should receive and store the funds from shareholders to their balance", async function () {
+        it("Should receive and store the funds from stakeholders to their balance", async function () {
             const { fundManagement, account1 } = await loadFixture(deployFundManagementFixture);
             await fundManagement.connect(account1).deposit(ONE_FMD.mul(3), { value: ONE_FMD.mul(3) })
             // check balance of stakeholder
