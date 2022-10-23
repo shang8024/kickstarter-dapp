@@ -14,14 +14,16 @@ const CompanyScreen = (props) => {
         txHashCreateSpending
     } = useFundManagement();
 
+    console.log(projectData);
+
     // console.log("CompanyScreen: account = ", currentAccount);
     const [open, setOpen] = React.useState(false);
     const [key, setKey] = React.useState('');
     const [amount, setAmount] = React.useState(0);
     const [loading, setLoading] = React.useState(false);
     const [message, setMessage] = React.useState('');
-
-
+    const [FMD, setFMD] = React.useState(0);
+    const [ETH, setETH] = React.useState(0);
 
     const slide = (func) => {
         let slider = document.getElementsByClassName('slide-container')[0]
@@ -37,58 +39,17 @@ const CompanyScreen = (props) => {
         companyName: 'Company Name',
         title: 'Title',
         description: 'This is a mock company page. You can subscribe to this company to become a stakeholder. You will be able to see the proposals and vote!',
-        cards: [
-            {
-                title: 'Proposal 1',
-                description: 'Thiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a as is a mock proposal. You can vote for this proposal to support it. ',
-                status: null,
-            },
-            {
-                title: 'Proposal 2',
-                description: 'Thiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a as is a mock proposal. You can vote for this proposal to support it. Thiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a as is a mock proposal. You can vote for this proposal to support ',
-                status: 'rejected',
-            },
-            {
-                title: 'Proposal 3',
-                description: 'This is a mock proposal. You can vote for this proposal to support it.',
-                status: 'approved',
-            },
-            {
-                title: 'Proposal 4',
-                description: 'This is a mock proposal. You can vote for this proposal to support it.',
-                status: null,
-            },{
-                title: 'Proposal 5',
-                description: 'This is a mock proposal. You can vote for this proposal to support it.',
-                status: 'approved',
-            },{
-                title: 'Proposal 6',
-                description: 'This is a mock proposal. You can vote for this proposal to support it.',
-                status: 'approved',
-            },
-            {
-                title: 'Proposal 7',
-                description: 'This is a mock proposal. You can vote for this proposal to support it.',
-                status: 'approved',
-            },
-        ]
     }
 
-    const closeDialog = () => {
-        if (!loading) {
-            setOpen(false);
-            setMessage('');
+    const changeFMD = (e) => {
+        setFMD(e.target.value);
+        setETH(e.target.value * 0.1);
+        if (FMD<1){
+            e.target.reportValidity();
+            e.target.setCustomValidity('Please enter a number greater than or equal to 1');
+        }else{
+            e.target.setCustomValidity('');
         }
-    }
-    const subscribe = () => {
-        setMessage('');
-        setLoading(true);
-        // do api call
-        //sleep for 10 sec
-        setTimeout(()=>{
-            setLoading(false);
-            setMessage('Successed!');
-        },3000);
     }
 
     return (
@@ -112,19 +73,46 @@ const CompanyScreen = (props) => {
                             onClick={connect}>
                             <span>{currentAccount ? 'Connected' : 'Connect to MetaMask'}</span>
                         </button>
+                        <div className='button-input-group'>
+                            <div className='group'>
+                                <div className='group input-group'>
+                                    <label>FMD:</label>
+                                    <input
+                                        type='number'
+                                        placeholder='FMD'
+                                        className='inputfield'
+                                        min={1}
+                                        value={FMD}
+                                        onChange={(e)=>changeFMD(e)}
+                                    />
+                                </div>
+                            <div className='icon'>&#8595;</div>
+                                <div className='group input-group'>
+                                    <label>ETH:</label>
+                                    <input
+                                    type='number'
+                                    placeholder='ETH'
+                                    className='inputfield'
+                                    disabled
+                                    min={0}
+                                    value={ETH}
+                                    />
+                                </div>
+                            </div>
+                            
                         <button
                             className='button'
                             // this button only shows when the user is connected
                             // if currentAccount.toUpperCase() !== projectProfile.admin.toUpperCase()
                             //    disable button showing your are not project admin
-                            onClick={() => buyFMDToken(
-                                "0.1") // 0.1 ETH is minimum amount
+                            onClick={() => buyFMDToken(ETH) // 0.1 ETH is minimum amount
                             }>
                             <span>{"exchangebutton"}</span>
                         </button>
                         <div id='subscription-info'>
                             {!txHashBuyFMD ? null : <p>TxHash: {txHashBuyFMD.hash}</p>}
-                            {!txHashBuyFMD ? null : <p>Finished: {txHashBuyFMD.status}</p>}
+                            {!txHashBuyFMD ? null : <p>TxHash: <a href={'https://goerli.etherscan.io/tx/'+txHashBuyFMD.hash}>{txHashBuyFMD.hash}</a></p>}
+                        </div>
                         </div>
                         <button
                             className='button'
