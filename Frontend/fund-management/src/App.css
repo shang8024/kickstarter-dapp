@@ -11,6 +11,10 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   vertical-align: baseline;
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   background-color: #e6e6e6;
   background-position: top left, top left;
@@ -21,6 +25,8 @@ body {
   color: #696969;
   font-weight: 300;
   line-height: 2.25em;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 .container article {
   height: 160px;
@@ -50,6 +56,10 @@ h2 {
   font-size: 2.25em;
   margin: 0 0 1.1em 0;
   line-height: 1em;
+}
+
+.container article h2 {
+  font-size: 2.5em;
 }
 
 p, ul, ol, dl, table {
@@ -172,7 +182,7 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   font-family: 'Oleo Script', serif;
   font-weight: 400;
   padding: 0.25em 0.2em 0.25em 0.2em;
-  font-size: 2.7em;
+  font-size: 2.5em;
   letter-spacing: 0.05em;
   display: inline-block;
   vertical-align: middle;
@@ -216,7 +226,8 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   text-align: center;
   font-size: 28px;
   padding: 20px;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   transition: all 0.5s;
   cursor: pointer;
   margin: 5px;
@@ -255,12 +266,12 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   position: absolute;
   left: 50%;
   top: 50%;
-  margin: 0;
   transform: translate(-50%,-50%);
   padding: 20px;
   height: fit-content;
   z-index: 99;
   min-width: 300px;
+  width: 50%;
   background-color: #f7f7f7;
   border-radius: 2%;
   backdrop-filter: blur(5px);
@@ -301,10 +312,11 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 	display: grid;
 	place-items: center;
 	margin-top: .6rem;
+  height: 100%;
 }
 
 .group {
-  width: 90%;
+  width: 80%;
   height: 47px;
   margin-bottom: 1.3rem;
 }
@@ -318,7 +330,7 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 }
 
 .group.button-group {
-  width: 60%;
+  width: 50%;
 }
 
 .group input {
@@ -433,7 +445,8 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   justify-content: space-between;
   align-items: stretch;
   width: fit-content;
-  padding: 9px 10px;
+  padding: 9px 15px;
+  overflow: hidden;
 }
 
 .slide-container{
@@ -450,15 +463,14 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 }
 
 .card {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 15px;
+  margin-right: 15px;
   height: 500px;
   word-wrap: break-word;
   word-break: break-word;
   overflow: hidden;
   text-overflow: ellipsis; 
-  min-width: calc(33.33vw - 32px);
-  width: 400px;
+  width: calc(33.33vw - 40px);
   padding: 20px;
   background-color: #f7f7f7;
   border-radius: .6rem;
@@ -472,9 +484,9 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   height: 360px;
   display: -webkit-box;
   word-break: break-all;
-  overflow : hidden;
   text-overflow: ellipsis;
   -webkit-line-clamp: 8;
+  overflow: hidden;
   -webkit-box-orient: vertical; 
 }
 
@@ -501,7 +513,13 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   text-align: center;
 }
 
-@media screen and (max-width: 680px) {
+@media screen and (max-width: 1180px) {
+  .card {
+    width:calc(50vw - 45px);
+  }
+}
+
+@media screen and (max-width: 790px) {
   .slide-content {
     flex-direction: column;
     padding: 9px 10px;
@@ -512,11 +530,50 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   .card {
     margin-left: auto;
     margin-right: auto;
-    width:90%;
+    width:80%;
     min-width: 400px;
     margin-top: 10px;
     margin-bottom: 10px;
   }
-
+  .slider .slide-prev, .slider .slide-next {
+    display: none;
+  }
 }
-  
+
+.slider {
+  position: relative;
+}
+
+.slider .slide-prev, .slider .slide-next {
+  width: 60px;
+  height: 60px;
+  font-size: 40px;
+  position: absolute;
+  top: 50%;
+  float: left;
+  border: none;
+  background-color: #ff4486;
+  color: white;
+  opacity: 0.6;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+  padding: 0;
+  border-radius: 0;
+  margin: 0;
+  transform: translate(0,-50%);
+}
+
+.slider .slide-prev {
+  left: 0;
+}
+
+.slider .slide-next {
+  right: 0;
+}
+
+.slider .slide-prev:hover, .slider .slide-next:hover {
+  opacity: 1;
+	transition: all .2s ease;
+	transition-delay: .1s;
+}

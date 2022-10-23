@@ -10,6 +10,16 @@ const CompanyScreen = (props) => {
     const [loading, setLoading] = React.useState(false);
     const [message, setMessage] = React.useState('');
 
+    const slide = (func) => {
+        let slider = document.getElementsByClassName('slide-container')[0]
+        let cardLen = (window.innerWidth <= 1180) ?
+                        0.5*window.innerWidth - 15 :
+                        0.3333*window.innerWidth - 10;
+        let change = (window.innerWidth <= 1180) ? 2: 3;
+        let curCard = Math.round(slider.scrollLeft/cardLen);
+        slider.scroll(cardLen * (func(curCard,change)),0);
+    };
+
     const data = {
         companyName: 'Company Name',
         title: 'Title',
@@ -34,13 +44,28 @@ const CompanyScreen = (props) => {
                 title: 'Proposal 4',
                 description: 'This is a mock proposal. You can vote for this proposal to support it.',
                 status: null,
-            }
+            },{
+                title: 'Proposal 5',
+                description: 'This is a mock proposal. You can vote for this proposal to support it.',
+                status: 'approved',
+            },{
+                title: 'Proposal 6',
+                description: 'This is a mock proposal. You can vote for this proposal to support it.',
+                status: 'approved',
+            },
+            {
+                title: 'Proposal 7',
+                description: 'This is a mock proposal. You can vote for this proposal to support it.',
+                status: 'approved',
+            },
         ]
     }
 
     const closeDialog = () => {
-        setOpen(true);
-        setMessage('');
+        if (!loading) {
+            setOpen(false);
+            setMessage('');
+        }
     }
     const subscribe = () => {
         setMessage('');
@@ -75,22 +100,24 @@ const CompanyScreen = (props) => {
                         </div>
                         <button 
                             className='button' 
-                            onClick={() => closeDialog()}>
+                            onClick={() => setOpen(true)}>
                             <span>{subscribed ? 'Subscribe More' : 'Become a Shareholder'}</span>
                         </button>
                     </div>
                 </div>
             </div>
             { subscribed &&
-            <div className="slide-container">
-                <div className="slide-content">
-                    {data.cards.map((card,i) => 
-                        <Card key={i} data={card}/>
-                    )}
+            <div className='slider'>
+                <button className='slide-prev button' onClick={()=>slide((a,b)=>a-b)}>&#8249;</button>
+                <div className="slide-container rootClass" >
+                    <div className="slide-content">
+                        {data.cards.map((card,i) => <Card key={i} data={card}/>)}
+                    </div>
                 </div>
+                <button className='slide-next button' onClick={()=>slide((a,b)=>a+b)}>&#8250;</button>
             </div>
             }
-            <Dialog open={open} closeDialog={() => setOpen(false)}>
+            <Dialog open={open} closeDialog={() => closeDialog()}>
                 <section>
                     <div className='button-input-group'>
                         <div className='group input-group'>

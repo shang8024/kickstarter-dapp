@@ -46,3 +46,9 @@ Blockchain:
 
 
 Deployed using on Hardhat using Alchemy
+
+
+
+Known issue:
+
+- should disable transferfrom ERC20 method from FMDToken to pervent Stakeholders exchange erc20 token

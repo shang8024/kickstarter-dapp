@@ -15,7 +15,7 @@ const Card = (props) => {
     }
 
     return (
-        <div className="card">
+        <div className="card flex-none">
             <div className="card-content">
                 <h2 className="name">{props.data.title}</h2>
                 <p className="description">{props.data.description}</p>

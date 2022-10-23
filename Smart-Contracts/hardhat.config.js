@@ -40,22 +40,18 @@ module.exports = {
 //     Account balance: 199999321861472897
 //     Token address: 0x2aCF653795CdaBA21b09096C02e3887dE97A0fB4
 
+//     Deploying contracts with the account: 0x02306583C1Af3B23f501034E242A706C01Eec178
+//     Account balance: 199998644693507177
+//     Token address: 0xdDe00500B5b1eFD020CB622973de50D2FF7AF5F4
 
 
-// npx hardhat verify --network goerli 0x2aCF653795CdaBA21b09096C02e3887dE97A0fB4 0x67E7E4Bc1962470B70B5B6C9E95AE858B8Ab55E5 100000000000000000
+// npx hardhat verify --network goerli 0xdDe00500B5b1eFD020CB622973de50D2FF7AF5F4 0x67E7E4Bc1962470B70B5B6C9E95AE858B8Ab55E5 100000000000000000
+//     Contract address are FundManagement.address
+//     Parameter: 
+//           admin = Tester 2.address 
+//           minBuyEth = 100000000000000000 = 0.1 ETH
 
-//     Nothing to compile
-//     Successfully submitted source code for contract
-//     contracts / FundManagement.sol:FundManagement at 0x2aCF653795CdaBA21b09096C02e3887dE97A0fB4
-//     for verification on the block explorer.Waiting for verification result...
-//     Successfully verified contract FundManagement on Etherscan.
-//     https://goerli.etherscan.io/address/0x2aCF653795CdaBA21b09096C02e3887dE97A0fB4#code
-
-// npx hardhat verify --network goerli 0xD6CB769573C137fDB3f147c9776957C8A232d77A 0x2aCF653795CdaBA21b09096C02e3887dE97A0fB4
-
-//     Compiled 1 Solidity file successfully
-//     Successfully submitted source code for contract
-//     contracts / FMDToken.sol:FMDToken at 0xD6CB769573C137fDB3f147c9776957C8A232d77A
-//     for verification on the block explorer.Waiting for verification result...
-//     Successfully verified contract FMDToken on Etherscan.
-//     https://goerli.etherscan.io/address/0xD6CB769573C137fDB3f147c9776957C8A232d77A#code
+// npx hardhat verify --network goerli 0x07FBb3Ac8e6202E2d6a4020336BC63cb38161eE1 0xdDe00500B5b1eFD020CB622973de50D2FF7AF5F4
+//     Contract address are FundManagement.shareToken.address
+//     Parameter: 
+//           admin = FundManagement contract
