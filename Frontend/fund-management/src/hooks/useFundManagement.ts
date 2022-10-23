@@ -53,7 +53,10 @@ const useFundManagement = () => {
     const [accountData, setAccountData] = useState<Account | null>(null);
 
     const [txHashBuyFMD, setTxHashBuyFMD] = useState<Tx | null>(null);
-    const [txHashCreateSpending, seTxHashCreateSpending] = useState<Tx | null>(null);
+    const [txHashReturnFMD, setTxHashReturnFMD] = useState<Tx | null>(null);
+    const [txHashApproveSpend, setTxHashApproveSpend] = useState<Tx | null>(null);
+    const [txHashCreateSpending, setTxHashCreateSpending] = useState<Tx | null>(null);
+    const [txHashExecuteSpending, setTxHashExecuteSpending] = useState<Tx | null>(null);
 
     const connect = async () => {
         try {
@@ -149,47 +152,132 @@ const useFundManagement = () => {
         setAccountData({ fmdBalance, ethBalance, approvals });
     }
 
+    // user: anyone logged in
     // amount in ETH, min = "0.1"
     const buyFMDToken = async (amount: string) => {
         try {
             const contract = getFundManagementContract();
             const txAmount = ethers.utils.parseEther(amount);
             const tx = await contract.deposit(txAmount, { value: txAmount });
-            // const etherscanLink = `https://goerli.etherscan.io/tx/${tx.hash}`;
+
+            console.log("buyFMD tx: ", tx.hash);
             setTxHashBuyFMD({ hash: tx.hash, status: false });
-            console.log("tx: ", tx.hash);
             await tx.wait();
             setTxHashBuyFMD({ hash: tx.hash, status: true });
 
             accountProfile();
             projectProfile();
         } catch (err) {
-            console.log("buyFMDToken: ", err);
+            console.log("buyFMD: ", err);
         }
     }
 
+    // user: stakeholder
+    // amount in FMD
+    const returnFMDToken = async (amount: string) => {
+        try {
+            const contract = getFundManagementContract();
+            const txAmount = ethers.utils.parseEther(amount);
+            const tx = await contract.transfer(txAmount);
+
+            console.log("returnFMD tx: ", tx.hash);
+            setTxHashReturnFMD({ hash: tx.hash, status: false });
+            await tx.wait();
+            setTxHashReturnFMD({ hash: tx.hash, status: true });
+
+            accountProfile();
+            projectProfile();
+        } catch (err) {
+            console.log("returnFMD: ", err);
+        }
+    }
+    // user: stakeholder
+    // spendingId: 0, 1, 2, ...
+    // vote: -1 no, 0 abstain, 1 yes
+    const approveSpending = async (spendingId: number, vote: number) => {
+        try {
+            const contract = getFundManagementContract();
+            const tx = await contract.transfer(spendingId, vote);
+
+            console.log("approveSpending tx: ", tx.hash);
+            setTxHashApproveSpend({ hash: tx.hash, status: false });
+            await tx.wait();
+            setTxHashApproveSpend({ hash: tx.hash, status: true });
+            
+            accountProfile();
+            projectProfile();
+        } catch (err) {
+            console.log("approveSpending: ", err);
+        }
+    }
+
+    // user: admin
     // amount in ETH
     const createSpending = async (receiver: string, amount: string, purpose: string) => {
         try {
             const contract = getFundManagementContract();
-            const tx = await contract.createSpending(receiver, ethers.utils.parseEther(amount), purpose);
+            const txAmount = ethers.utils.parseEther(amount);
+            const tx = await contract.createSpending(receiver, txAmount, purpose);
+            
+            console.log("createSpending tx: ", tx.hash);
+            setTxHashCreateSpending({ hash: tx.hash, status: false });
             await tx.wait();
-            console.log("createSpending: ", tx);
+            setTxHashCreateSpending({ hash: tx.hash, status: true });
+
+            accountProfile();
             projectProfile();
         } catch (err) {
             console.log("createSpending: ", err);
         }
     }
 
+    // user: admin
+    const executeSpending = async (spendingId: number) => {
+        try {
+            const contract = getFundManagementContract();
+            const tx = await contract.executeSpending(spendingId);
+
+            console.log("executeSpending tx: ", tx.hash);
+            setTxHashExecuteSpending({ hash: tx.hash, status: false });
+            await tx.wait();
+            setTxHashExecuteSpending({ hash: tx.hash, status: true });
+
+            accountProfile();
+            projectProfile();
+        } catch (err) {
+            console.log("executeSpending: ", err);
+        }
+    }
+
+    // const createSpending = async (receiver: string, amount: string, purpose: string) => {
+    //     try {
+    //         const contract = getFundManagementContract();
+    //         const tx = await contract.createSpending(receiver, ethers.utils.parseEther(amount), purpose);
+    //         await tx.wait();
+    //         console.log("createSpending: ", tx);
+
+    //         accountProfile();
+    //         projectProfile();
+    //     } catch (err) {
+    //         console.log("createSpending: ", err);
+    //     }
+    // }
+
     return {
         connect, 
         currentAccount, 
         projectData, 
         accountData, 
-        buyFMDToken, 
+        buyFMDToken,
+        returnFMDToken,
+        approveSpending,
         createSpending, 
-        txHashBuyFMD, 
-        txHashCreateSpending
+        executeSpending,
+        txHashBuyFMD,
+        txHashReturnFMD,
+        txHashApproveSpend,
+        txHashCreateSpending,
+        txHashExecuteSpending
     };
 }
 

@@ -8,10 +8,16 @@ const CompanyScreen = (props) => {
         currentAccount, 
         projectData, 
         accountData, 
-        buyFMDToken, 
+        buyFMDToken,
+        returnFMDToken,
+        approveSpending,
         createSpending,
+        executeSpending,
         txHashBuyFMD,
-        txHashCreateSpending
+        txHashReturnFMD,
+        txHashApproveSpend,
+        txHashCreateSpending,
+        txHashExecuteSpending
     } = useFundManagement();
 
     console.log(projectData);
@@ -114,6 +120,7 @@ const CompanyScreen = (props) => {
                             {!txHashBuyFMD ? null : <p>TxHash: <a href={'https://goerli.etherscan.io/tx/'+txHashBuyFMD.hash}>{txHashBuyFMD.hash}</a></p>}
                         </div>
                         </div>
+
                         <button
                             className='button'
                             // this button only shows when the user is connected
