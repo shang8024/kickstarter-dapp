@@ -5,7 +5,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "./FMDToken.sol";
-import "hardhat/console.sol";
+
 /**
  * @title FundManagement
  * @dev Digital Fund Management System
@@ -116,14 +116,11 @@ contract FundManagement {
         require(ETHAmt <= stakeholders[msg.sender], "transfer amount is greater than sender's balance");
 
         // transfer FMD tokens from sender to contract address
-        FMDToken(shareToken).transfer(msg.sender, address(this), transferAmt);
+        FMDToken(shareToken).transfer(msg.sender, transferAmt);
         // tokenMinted -= transferAmt * 10; David said we dont need to decrease tokenMinted
 
-        // console.log("STAAmt: %s", stakeholders[msg.sender]);
-        // console.log("ETHAmt: %s", ETHAmt);
         // subtract transferAmt from the sender's balance
         stakeholders[msg.sender] -= ETHAmt; // unit: Gwei (1 ETH)
-        // console.log("STAAmt: %s", stakeholders[msg.sender]);
     }
 
     /**
@@ -219,11 +216,6 @@ contract FundManagement {
         }
 
         require(votePercent >= MIN_VOTE_PERCENT, "Not enough approvals");
-        // console.log("spendingId", spendingId);
-        // console.log("votePercent", votePercent);
-        // console.log("approvalCount", spending[spendingId].approvalCount);
-        // console.log("tokenMinted", tokenMinted);
-        // console.log("contract balance", address(this).balance);
         // check if the contract has enough balance
         require(address(this).balance >= spending[spendingId].amt, "Not enough balance");
 

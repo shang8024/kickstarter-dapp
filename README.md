@@ -38,3 +38,11 @@ Blockchain:
 - [Solidity](https://docs.soliditylang.org/): Language used to build smart contracts
 - [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts): a library of well tested smart contracts, including ERC20
 - [Etherscan](https://etherscan.io/): Block explorer
+
+
+
+
+
+
+
+Deployed using on Hardhat using Alchemy

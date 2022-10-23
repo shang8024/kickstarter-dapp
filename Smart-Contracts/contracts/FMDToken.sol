@@ -50,21 +50,20 @@ contract FMDToken is ERC20 {
      /**
      * @dev Tranfer FMDTokens from the caller's account to another account
      * @param stackholder the sender of the FMDToken transfer
-     * @param receiver the receiver of the VIP Pass transfer
      * @param transferAmt the amt of FMDTokens to transfer
      */ 
-    function transfer(address stackholder, address receiver, uint256 transferAmt) public {
+    function transfer(address stackholder, uint256 transferAmt) override public returns (bool success) {
         // note that receiver is hardcoded to admin, which is the FundManagement contract
         // we are not allowing transfer bettwen accounts other than admin
         // should be only called by contract = admin, waiting for slide about keyword != public
         require(msg.sender == admin || isApproved[stackholder][msg.sender], 
             "Transfer not allowed, sender is not msg.sender or isApproved is false"
         );
-        require(receiver == admin, "Transfer not allowed, receiver must be contract");
-
         _transfer(stackholder, admin, transferAmt);
 
         emit Transfer(stackholder, admin, transferAmt);
+
+        return true;
     }
 
     /**

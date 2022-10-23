@@ -1,31 +1,25 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-const hre = require("hardhat");
+// https://hardhat.org/tutorial/deploying-to-a-live-network 
+
+const MIN_BUY_ETH = ethers.utils.parseEther('1').div(10); // 0.1 ETH
+// Tester 2
+const ADMIN_ADDRESS = "0x67E7E4Bc1962470B70B5B6C9E95AE858B8Ab55E5";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const [deployer] = await ethers.getSigners();
 
-  const lockedAmount = hre.ethers.utils.parseEther("1");
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  await lock.deployed();
+  const FundMgt = await ethers.getContractFactory("FundManagement");
+  const fundMgt = await FundMgt.deploy(ADMIN_ADDRESS, MIN_BUY_ETH);
 
-  console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+  console.log("Token address:", fundMgt.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

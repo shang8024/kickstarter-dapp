@@ -519,5 +519,21 @@ describe("FundManagement", function () {
             // FMD balance of contract = 17.56 FMD
             expect(await shareToken.balanceOf(fundManagement.address)).to.equal(transTokenAmt);
         });
+        it("Should emit Transfer in shareToken", async function () {
+            const { fundManagement, account1 } = await loadFixture(spedingFundManagementFixture);
+            const depositETHAmt = ONE_ETH.mul(2);
+            // add 2 ETH balance to account1
+            await fundManagement.connect(account1).deposit(depositETHAmt, { value: depositETHAmt, })
+
+            // transfer 17.56 FMD = 1.756 ETH
+            const transTokenAmt = ONE_FMD.mul(1756).div(100);
+
+            const shareTokenAddress = await fundManagement.shareToken();
+            const shareToken = await ethers.getContractAt("FMDToken", shareTokenAddress);
+
+            await expect(await fundManagement.connect(account1).transfer(transTokenAmt)).to.emit(
+                shareToken, "Transfer"
+            ).withArgs(account1.address, fundManagement.address, transTokenAmt);
+        });
     }); 
 });
