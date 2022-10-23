@@ -30,6 +30,7 @@ const CompanyScreen = (props) => {
     const [message, setMessage] = React.useState('');
     const [FMD, setFMD] = React.useState(0);
     const [ETH, setETH] = React.useState(0);
+    const fmdInput = React.createRef();
 
     const slide = (func) => {
         let slider = document.getElementsByClassName('slide-container')[0]
@@ -56,6 +57,15 @@ const CompanyScreen = (props) => {
         }else{
             e.target.setCustomValidity('');
         }
+    }
+
+    const buyFMD = (e) => {
+        if (FMD < 1) {
+            fmdInput.current.reportValidity();
+            fmdInput.current.setCustomValidity('Please enter a number greater than or equal to 1');
+            return;
+        }
+        buyFMDToken(ETH.toString());
     }
 
     return (
@@ -88,8 +98,9 @@ const CompanyScreen = (props) => {
                                         placeholder='FMD'
                                         className='inputfield'
                                         min={1}
+                                        ref={fmdInput}
                                         value={FMD}
-                                        onChange={(e)=>changeFMD(e)}
+                                        onChange={e => changeFMD(e)}
                                     />
                                 </div>
                             <div className='icon'>&#8595;</div>
@@ -111,7 +122,7 @@ const CompanyScreen = (props) => {
                             // this button only shows when the user is connected
                             // if currentAccount.toUpperCase() !== projectProfile.admin.toUpperCase()
                             //    disable button showing your are not project admin
-                            onClick={() => buyFMDToken(ETH) // 0.1 ETH is minimum amount
+                            onClick={(e) => buyFMD(e) // 0.1 ETH is minimum amount
                             }>
                             <span>{"exchangebutton"}</span>
                         </button>
