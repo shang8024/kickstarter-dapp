@@ -8,10 +8,16 @@ const CompanyScreen = (props) => {
         currentAccount, 
         projectData, 
         accountData, 
-        buyFMDToken, 
+        buyFMDToken,
+        returnFMDToken,
+        approveSpending,
         createSpending,
+        executeSpending,
         txHashBuyFMD,
-        txHashCreateSpending
+        txHashReturnFMD,
+        txHashApproveSpend,
+        txHashCreateSpending,
+        txHashExecuteSpending
     } = useFundManagement();
 
     // console.log("CompanyScreen: account = ", currentAccount);
@@ -112,6 +118,7 @@ const CompanyScreen = (props) => {
                             onClick={connect}>
                             <span>{currentAccount ? 'Connected' : 'Connect to MetaMask'}</span>
                         </button>
+
                         <button
                             className='button'
                             // this button only shows when the user is connected
@@ -119,6 +126,7 @@ const CompanyScreen = (props) => {
                             //    disable button showing your are not project admin
                             onClick={() => buyFMDToken(
                                 "0.1") // 0.1 ETH is minimum amount
+                                // const etherscanLink = `https://goerli.etherscan.io/tx/${txHashBuyFMD.hash}`;
                             }>
                             <span>{"exchangebutton"}</span>
                         </button>
@@ -126,6 +134,7 @@ const CompanyScreen = (props) => {
                             {!txHashBuyFMD ? null : <p>TxHash: {txHashBuyFMD.hash}</p>}
                             {!txHashBuyFMD ? null : <p>Finished: {txHashBuyFMD.status}</p>}
                         </div>
+
                         <button
                             className='button'
                             // this button only shows when the user is connected
