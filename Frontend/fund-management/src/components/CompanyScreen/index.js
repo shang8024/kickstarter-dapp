@@ -4,7 +4,16 @@ import Card from '../Card';
 import Dialog from '../Dialog';
 
 const CompanyScreen = (props) => {
-    const { connect, currentAccount, projectData, accountData} = useFundManagement();
+    const { 
+        connect, 
+        currentAccount, 
+        projectData, 
+        accountData, 
+        buyFMDToken, 
+        createSpending,
+        txHashBuyFMD,
+        txHashCreateSpending
+    } = useFundManagement();
 
     // console.log("CompanyScreen: account = ", currentAccount);
     const [open, setOpen] = React.useState(false);
@@ -12,6 +21,8 @@ const CompanyScreen = (props) => {
     const [amount, setAmount] = React.useState(0);
     const [loading, setLoading] = React.useState(false);
     const [message, setMessage] = React.useState('');
+
+
 
     const slide = (func) => {
         let slider = document.getElementsByClassName('slide-container')[0]
@@ -102,11 +113,32 @@ const CompanyScreen = (props) => {
                             onClick={connect}>
                             <span>{currentAccount ? 'Connected' : 'Connect to MetaMask'}</span>
                         </button>
-                        {/* <button
+                        <button
                             className='button'
-                            onClick={createSpending()}>
+                            // this button only shows when the user is connected
+                            // if currentAccount.toUpperCase() !== projectProfile.admin.toUpperCase()
+                            //    disable button showing your are not project admin
+                            onClick={() => buyFMDToken(
+                                "0.1") // 0.1 ETH is minimum amount
+                            }>
+                            <span>{"exchangebutton"}</span>
+                        </button>
+                        <div id='subscription-info'>
+                            {!txHashBuyFMD ? null : <p>TxHash: {txHashBuyFMD.hash}</p>}
+                            {!txHashBuyFMD ? null : <p>Finished: {txHashBuyFMD.status}</p>}
+                        </div>
+                        <button
+                            className='button'
+                            // this button only shows when the user is connected
+                            // if currentAccount.toUpperCase() !== projectProfile.admin.toUpperCase()
+                            //    disable button showing your are not project admin
+                            onClick={() => createSpending( 
+                                "0xDBEFE09D505fEd9E236586b41Db39f5F0D55d49f", // must be wallet address
+                                "23", // 23 ETH, number
+                                "buy foods") // string
+                            }>
                             <span>{"create spending"}</span>
-                        </button> */}
+                        </button>
                         <div id='subscription-info'>
                             {!currentAccount ? null : <p>Address: { currentAccount }</p>}
                         </div>
