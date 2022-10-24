@@ -17,12 +17,15 @@ type Spending = {
     approvalETHCount: string;
 }
 type Project = {
+    ContractAddress: string;
     shareTokenAddress: string;
     admin: string;
     minBuyETH: string;
     fmdMinted: string;
     spendingIdCounter: number;
     spending: Spending[];
+    fmdBalance: string;
+    ethBalance: string;
 }
 
 type Account = {
@@ -121,15 +124,24 @@ const useFundManagement = () => {
             let approvalETHCount = ethers.utils.formatEther(approvalCount);
             spending.push({ purpose, amt, receiver, executed, approvalETHCount });
         }
+
+        const shareTokenContract = getFMDTokenContract(shareTokenAddress);
+        const fmdBalance = ethers.utils.formatEther(await shareTokenContract.balanceOf(ContractAddress));
+        
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const ethBalance = ethers.utils.formatEther(await provider.getBalance(ContractAddress));
         console.log("Project data---------------------------------")
+        console.log("ContractAddress: ", ContractAddress)
         console.log("shareTokenAddress: ", shareTokenAddress)
         console.log("admin: ", admin)
         console.log("minBuyETH: ", minBuyETH)
         console.log("fmdMinted: ", fmdMinted)
         console.log("spendingIdCounter: ", spendingIdCounter)
         console.log("spending: ", spending)
+        console.log("fmdBalance: ", fmdBalance)
+        console.log("ethBalance: ", ethBalance)
 
-        setProjectData({ shareTokenAddress, admin, minBuyETH, fmdMinted, spendingIdCounter, spending });
+        setProjectData({ ContractAddress, shareTokenAddress, admin, minBuyETH, fmdMinted, spendingIdCounter, spending, fmdBalance, ethBalance});
     }
 
     const accountProfile = async () => {
@@ -198,26 +210,7 @@ const useFundManagement = () => {
             setTxReturnFMD({ hash: "", status: false, errorMsg: err.reason });
         }
     }
-    // user: stakeholder
-    // spendingId: 0, 1, 2, ...
-    // vote: -1 no, 0 abstain, 1 yes
-    const approveSpending = async (spendingId: number, vote: number) => {
-        try {
-            const contract = getFundManagementContract();
-            const tx = await contract.transfer(spendingId, vote);
 
-            console.log("approveSpending tx: ", tx.hash);
-            setTxApproveSpend({ hash: tx.hash, status: false, errorMsg: '' });
-            await tx.wait();
-            setTxApproveSpend({ hash: tx.hash, status: true, errorMsg: '' });
-            
-            accountProfile();
-            projectProfile();
-        } catch (err) {
-            console.log("approveSpending: ", err);
-            setTxApproveSpend({ hash: "", status: false, errorMsg: err.reason });
-        }
-    }
 
     // user: admin
     // amount in ETH
@@ -237,6 +230,27 @@ const useFundManagement = () => {
         } catch (err) {
             console.log("createSpending: ", err);
             setTxCreateSpending({ hash: "", status: false, errorMsg: err.reason });
+        }
+    }
+
+    // user: stakeholder
+    // spendingId: 0, 1, 2, ...
+    // vote: -1 no, 0 abstain, 1 yes
+    const approveSpending = async (spendingId: number, vote: number) => {
+        try {
+            const contract = getFundManagementContract();
+            const tx = await contract.approveSpending(spendingId, vote);
+
+            console.log("approveSpending tx: ", tx.hash);
+            setTxApproveSpend({ hash: tx.hash, status: false, errorMsg: '' });
+            await tx.wait();
+            setTxApproveSpend({ hash: tx.hash, status: true, errorMsg: '' });
+
+            accountProfile();
+            projectProfile();
+        } catch (err) {
+            console.log("approveSpending: ", err);
+            setTxApproveSpend({ hash: "", status: false, errorMsg: err.reason });
         }
     }
 
