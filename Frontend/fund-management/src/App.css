@@ -349,7 +349,7 @@ input {
   color: white;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: .6rem;
   position: absolute;
   top: 50%;
   left: 57.5%;

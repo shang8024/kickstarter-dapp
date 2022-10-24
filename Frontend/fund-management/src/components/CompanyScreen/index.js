@@ -118,12 +118,12 @@ const CompanyScreen = (props) => {
                                 <div className='group input-group'>
                                     <label>ETH:</label>
                                     <input
-                                    type='number'
-                                    placeholder='ETH'
-                                    className='inputfield'
-                                    min={0}
-                                    value={ETH}
-                                    onChange={e => changeETH(e)}
+                                        type='number'
+                                        placeholder='ETH'
+                                        className='inputfield'
+                                        min={0}
+                                        value={ETH}
+                                        onChange={e => changeETH(e)}
                                     />
                                 </div>
                             </div>
@@ -139,6 +139,8 @@ const CompanyScreen = (props) => {
                         </button>
                         <div id='subscription-info'>
                             {!txHashBuyFMD ? null : <p>TxHash: {txHashBuyFMD.hash}</p>}
+                        </div>
+                        <div id='subscription-info'>
                             {!txHashBuyFMD ? null : <p>TxHash: <a href={'https://goerli.etherscan.io/tx/'+txHashBuyFMD.hash}>{txHashBuyFMD.hash}</a></p>}
                         </div>
                         </div>
