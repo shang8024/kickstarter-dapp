@@ -51,6 +51,17 @@ const CompanyScreen = (props) => {
     const changeFMD = (e) => {
         setFMD(e.target.value);
         setETH(e.target.value * 0.1);
+        if (ETH<0.1){
+            e.target.reportValidity();
+            e.target.setCustomValidity('Please enter a number greater than or equal to 1');
+        }else{
+            e.target.setCustomValidity('');
+        }
+    }
+
+    const changeETH = (e) => {
+        setETH(e.target.value);
+        setFMD(e.target.value * 10);
         if (FMD<1){
             e.target.reportValidity();
             e.target.setCustomValidity('Please enter a number greater than or equal to 1');
@@ -110,9 +121,9 @@ const CompanyScreen = (props) => {
                                     type='number'
                                     placeholder='ETH'
                                     className='inputfield'
-                                    disabled
                                     min={0}
                                     value={ETH}
+                                    onChange={e => changeETH(e)}
                                     />
                                 </div>
                             </div>
