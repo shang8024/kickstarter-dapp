@@ -107,7 +107,7 @@ contract FundManagement {
      */
     function transfer(uint256 transferAmt) public {
         // check if the withdraw amount is greater than the minBuyETH
-        require(transferAmt >= minBuyETH * 10, "transfer amount must be greater than 1 FMD = 0.1 ETH");
+        require(transferAmt >= minBuyETH * 10, "transfer amount must be greater than or equal to 1 FMD = 0.1 ETH");
 
         uint256 ETHAmt = transferAmt / 10; // 10 FMD = 1 ETH
 

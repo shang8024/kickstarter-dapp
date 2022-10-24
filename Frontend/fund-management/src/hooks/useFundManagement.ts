@@ -34,6 +34,7 @@ type Account = {
 type Tx = {
     hash: string;
     status: boolean;
+    errorMsg: string;
 }
 
 const getFundManagementContract = () => {
@@ -52,11 +53,11 @@ const useFundManagement = () => {
     const [projectData, setProjectData] = useState<Project | null>(null);
     const [accountData, setAccountData] = useState<Account | null>(null);
 
-    const [txHashBuyFMD, setTxHashBuyFMD] = useState<Tx | null>(null);
-    const [txHashReturnFMD, setTxHashReturnFMD] = useState<Tx | null>(null);
-    const [txHashApproveSpend, setTxHashApproveSpend] = useState<Tx | null>(null);
-    const [txHashCreateSpending, setTxHashCreateSpending] = useState<Tx | null>(null);
-    const [txHashExecuteSpending, setTxHashExecuteSpending] = useState<Tx | null>(null);
+    const [txBuyFMD, setTxBuyFMD] = useState<Tx | null>(null);
+    const [txReturnFMD, setTxReturnFMD] = useState<Tx | null>(null);
+    const [txApproveSpend, setTxApproveSpend] = useState<Tx | null>(null);
+    const [txCreateSpending, setTxCreateSpending] = useState<Tx | null>(null);
+    const [txExecuteSpending, setTxExecuteSpending] = useState<Tx | null>(null);
 
     const connect = async () => {
         try {
@@ -161,34 +162,40 @@ const useFundManagement = () => {
             const tx = await contract.deposit(txAmount, { value: txAmount });
 
             console.log("buyFMD tx: ", tx.hash);
-            setTxHashBuyFMD({ hash: tx.hash, status: false });
+            setTxBuyFMD({ hash: tx.hash, status: false, errorMsg: '' });
             await tx.wait();
-            setTxHashBuyFMD({ hash: tx.hash, status: true });
+            setTxBuyFMD({ hash: tx.hash, status: true, errorMsg: '' });
 
             accountProfile();
             projectProfile();
         } catch (err) {
-            console.log("buyFMD: ", err);
+            console.log("buyFMDToken: ", err);
+            setTxBuyFMD({ hash: "", status: false, errorMsg: err.reason });
         }
     }
 
     // user: stakeholder
     // amount in FMD
     const returnFMDToken = async (amount: string) => {
+        if (amount <= "0") {
+            setTxReturnFMD({ hash: "", status: false, errorMsg: "Return amt should larger than 0" });
+            return;
+        }
         try {
             const contract = getFundManagementContract();
             const txAmount = ethers.utils.parseEther(amount);
             const tx = await contract.transfer(txAmount);
 
             console.log("returnFMD tx: ", tx.hash);
-            setTxHashReturnFMD({ hash: tx.hash, status: false });
+            setTxReturnFMD({ hash: tx.hash, status: false, errorMsg: '' });
             await tx.wait();
-            setTxHashReturnFMD({ hash: tx.hash, status: true });
+            setTxReturnFMD({ hash: tx.hash, status: true, errorMsg: '' });
 
             accountProfile();
             projectProfile();
         } catch (err) {
-            console.log("returnFMD: ", err);
+            console.log("returnFMDToken: ", err);
+            setTxReturnFMD({ hash: "", status: false, errorMsg: err.reason });
         }
     }
     // user: stakeholder
@@ -200,14 +207,15 @@ const useFundManagement = () => {
             const tx = await contract.transfer(spendingId, vote);
 
             console.log("approveSpending tx: ", tx.hash);
-            setTxHashApproveSpend({ hash: tx.hash, status: false });
+            setTxApproveSpend({ hash: tx.hash, status: false, errorMsg: '' });
             await tx.wait();
-            setTxHashApproveSpend({ hash: tx.hash, status: true });
+            setTxApproveSpend({ hash: tx.hash, status: true, errorMsg: '' });
             
             accountProfile();
             projectProfile();
         } catch (err) {
             console.log("approveSpending: ", err);
+            setTxApproveSpend({ hash: "", status: false, errorMsg: err.reason });
         }
     }
 
@@ -220,14 +228,15 @@ const useFundManagement = () => {
             const tx = await contract.createSpending(receiver, txAmount, purpose);
             
             console.log("createSpending tx: ", tx.hash);
-            setTxHashCreateSpending({ hash: tx.hash, status: false });
+            setTxCreateSpending({ hash: tx.hash, status: false, errorMsg: '' });
             await tx.wait();
-            setTxHashCreateSpending({ hash: tx.hash, status: true });
+            setTxCreateSpending({ hash: tx.hash, status: true, errorMsg: '' });
 
             accountProfile();
             projectProfile();
         } catch (err) {
             console.log("createSpending: ", err);
+            setTxCreateSpending({ hash: "", status: false, errorMsg: err.reason });
         }
     }
 
@@ -238,14 +247,15 @@ const useFundManagement = () => {
             const tx = await contract.executeSpending(spendingId);
 
             console.log("executeSpending tx: ", tx.hash);
-            setTxHashExecuteSpending({ hash: tx.hash, status: false });
+            setTxExecuteSpending({ hash: tx.hash, status: false, errorMsg: '' });
             await tx.wait();
-            setTxHashExecuteSpending({ hash: tx.hash, status: true });
+            setTxExecuteSpending({ hash: tx.hash, status: true, errorMsg: '' });
 
             accountProfile();
             projectProfile();
         } catch (err) {
             console.log("executeSpending: ", err);
+            setTxExecuteSpending({ hash: "", status: false, errorMsg: err.reason });
         }
     }
 
@@ -273,11 +283,11 @@ const useFundManagement = () => {
         approveSpending,
         createSpending, 
         executeSpending,
-        txHashBuyFMD,
-        txHashReturnFMD,
-        txHashApproveSpend,
-        txHashCreateSpending,
-        txHashExecuteSpending
+        txBuyFMD,
+        txReturnFMD,
+        txApproveSpend,
+        txCreateSpending,
+        txExecuteSpending
     };
 }
 
