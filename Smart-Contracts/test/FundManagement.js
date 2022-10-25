@@ -444,7 +444,7 @@ describe("FundManagement", function () {
             await fundManagement.connect(account1).deposit(MIN_BUY_ETH, { value: MIN_BUY_ETH, })
 
             await expect(fundManagement.connect(account1).transfer(ONE_FMD.sub(1))).to.be.revertedWith(
-                "transfer amount must be greater than 1 FMD = 0.1 ETH"
+                "transfer amount must be greater than or equal to 1 FMD = 0.1 ETH"
             );
             await fundManagement.connect(account1).transfer(ONE_FMD);
         });
