@@ -10,7 +10,7 @@ The fund manager (admin) can create new spending requests in benefit of the fund
 
 ##### dApp Interface:
 
-- Link:
+- Link: https://flourishing-halva-f104e5.netlify.app/
 
 - Deployed on netlify by following [this blog](https://www.netlify.com/blog/2016/07/22/deploy-react-apps-in-less-than-30-seconds/).
 - This dApp is served by the contracts described below.
