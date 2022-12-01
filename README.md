@@ -1,26 +1,26 @@
-# Fund Management Dapp
+# Kickstarter dApp
 
 This dApp allows people to deposit ETH into decentralized fund, and in return the fund will issue ERC20 tokens to represent the fund's shares. In other words, people can buy ERC20 tokens from the fund. The price is 1 FMD = 0.1ETH. The minimum ETH to spend to become a stakeholder is 0.1ETH. The ERC20 token can only be transferred from a shareholder to the Fund Management Contract.
 
 The fund manager (admin) can create new spending requests in benefit of the fund, such as paying for building new software or hiring new employees. The stakeholders can then vote on such proposals. If the minimum approval votes (75% of all tokens) have been met, the admin can execute the spending, which send the ETH to a given address.
 
+> Notice that DAOs can use a similar process to execute their code-related improvement proposals. e.g. Helium Improvement Proposals(HIP), Ethereum Improvement Proposals(EIP)
 
 
-## Demo:
+
+## Demo Instance
 
 ##### dApp Interface:
 
-- Link: https://flourishing-halva-f104e5.netlify.app/
-
-- Deployed on netlify by following [this blog](https://www.netlify.com/blog/2016/07/22/deploy-react-apps-in-less-than-30-seconds/).
+- Link: https://heartfelt-mooncake-8f0bf2.netlify.app/
 - This dApp is served by the contracts described below.
 
-##### Contract:
+##### Contract Addresses (Goerli Testnet):
 
-- FundMangement contract address
+- FundMangement contract:
   - [0xdDe00500B5b1eFD020CB622973de50D2FF7AF5F4](https://goerli.etherscan.io/address/0xdDe00500B5b1eFD020CB622973de50D2FF7AF5F4)
 
-- FMDToken contract address:
+- FMDToken contract:
   - [0x07FBb3Ac8e6202E2d6a4020336BC63cb38161eE1](https://goerli.etherscan.io/address/0x07FBb3Ac8e6202E2d6a4020336BC63cb38161eE1)
 - Admin address:
   - [0x67E7E4Bc1962470B70B5B6C9E95AE858B8Ab55E5](https://goerli.etherscan.io/address/0x67E7E4Bc1962470B70B5B6C9E95AE858B8Ab55E5)
@@ -28,25 +28,24 @@ The fund manager (admin) can create new spending requests in benefit of the fund
 
 
 
-## Contribution:
+## Contribution
 
-##### Locations of Magic variables during setup:
+##### Locations of unavoidable magic variables during setup:
 
 - ADMIN_ADDRESS
-  - location: kickstarter-dapp/Smart-Contracts/scripts/deploy.js
-  - This account is the input variable to set the FundManagement contract Admin
-  - You can request the admin private key to test CreateSpending and ExecuteSpending functions. 
-  - I suggest you read the links to the articles inside these two documents to learn about my deployment process.
-
+  - location: `kickstarter-dapp/Smart-Contracts/scripts/deploy.js`
+  - This address is required when constructing the FundManagement contract.
+  - Since this account of this address will be the admin of the contract, it's hard for you to test the admin functions (CreateSpending and ExecuteSpending) using the [demo instance](## Demo Instance) without the private key.
+    - Please test/deploy your instance.
+    - The demo instance also contains some transaction history, including the execution of admin functions.
 - GOERLI_PRIVATE_KEY
-  - location: kickstarter-dapp/Smart-Contracts/hardhat.config.js
-  - This account helped deploy the smart contract on the Goerli network, but for testing purposes, it's not Contract Admin.
-  - Feel free to use it!
+  - location: `kickstarter-dapp/Smart-Contracts/hardhat.config.js`
+  - This address is required when deploying the smart contract on the Goerli network, but for testing purposes, it's not Contract Admin. Feel free to use it!
 
 
 ##### Known issue:
 
-- Should disable ERC20 transfer from method from FMDToken to prevent Stakeholders exchanging erc20 token.
+- Design choice: should disable ERC20 transfer from method from FMDToken to prevent Stakeholders from exchanging ERC20 tokens.
 
 
 
@@ -84,3 +83,18 @@ Blockchain:
 - [Solidity](https://docs.soliditylang.org/): Language used to build smart contracts
 - [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts): a library of well tested smart contracts, including ERC20
 - [Etherscan](https://etherscan.io/): Block explorer
+
+
+
+## Starter code design: 
+
+- [David Liu](https://www.linkedin.com/in/davidliu134/)
+- [Professor Sans](https://thierrysans.me/)
+
+
+
+## Useful Links:
+
+[Netlify: How to deploy React Apps in less than 30 Seconds](https://www.netlify.com/blog/2016/07/22/deploy-react-apps-in-less-than-30-seconds/)
+
+[Hardhat & Alchemyapi: Deploying to a live network](https://hardhat.org/tutorial/deploying-to-a-live-network#7.-deploying-to-a-live-network)

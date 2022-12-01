@@ -144,7 +144,7 @@ const CompanyScreen = (props) => {
                         
                         <Grid container direction="row" justifyContent="space-between" alignItems="flex-start">
                             <Grid item xs>
-                                <h1><a target="_blank" href='#'>Dckstarter</a></h1>
+                                <h1><a target="_blank" href='#'>Kickstarter</a></h1>
                             </Grid>
                             <Grid item xs>
                                 <h4 style={{
